@@ -126,6 +126,7 @@ const csvDataPeriods = `
 124,chr(ord(min(str(dict())))+int(not()))
 125,max(str(dict()))
 126,chr(ord(max(str(dict())))+int(not()))
+3486,chr(sum(range(ord(min(str(not()))))))
 `
 
 const csvData = `
@@ -256,6 +257,7 @@ const csvData = `
 124,chr(ord(min(str(dict())))+int(not()))
 125,max(str(dict()))
 126,chr(ord(max(str(dict())))+int(not()))
+3486,chr(sum(range(ord(min(str(not()))))))
 `;
 
 function mapCharacters(csvData) {
