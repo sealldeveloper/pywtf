@@ -91,10 +91,15 @@
   </div>
 
   <div class="checkbox">
-    <input id="periods" type="checkbox" />
-    <label for="periods">Allow for '.'s in the code</label>
+    <input id="period" type="checkbox" />
+    <label for="period">Allow for '.'s</label>
   </div>
   
+  <div class="checkbox"></div>
+    <input id="astrix" type="checkbox" />
+    <label for="astrix">Allow for '*'s</label>
+  </div>
+
   <textarea id="output"></textarea>
   <div class="actions">
     <span id="stats">…</span>
@@ -128,20 +133,16 @@
 
   <script src="pywtf.js"></script>
   <script>
-
-    function $(id){
-      return document.getElementById(id);
-    }
-    
     function encode(){
-      var output = replaceAndJoin($('input').value, $('eval').checked, $('periods').checked);
+      var output = replaceAndJoin($('input').value);
       $("output").value = output;
       $("stats").innerHTML = output.length + " chars";
     }
   
     $("encode").onclick = encode;
     $("eval").onchange = encode;
-    $("periods").onchange = encode;
+    $("period").onchange = encode;
+    $("astrix").onchange = encode;
     $("scope").onchange = encode;
     $("input").onchange = encode;
     
