@@ -4,7 +4,7 @@ PyWTF is an esoteric and educational programming style based on JSFuck and inspi
 
 It does not depend on a browser, so you can even run it with Python (to come).
 
-Demo: Todo
+Demo: https://pywtf.seall.dev
 
 By [@sealldev](https://twitter.com/sealldev) and [friends](https://github.com/sealldeveloper/pywtf/graphs/contributors).
 
