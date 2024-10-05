@@ -30,6 +30,8 @@ not())))))
     2           =>  int(not())+int(not())
     10          =>  int(str(int(not()))+str(int()))
     a           =>  next(reversed(hex(ord(max(str(complex()))))))
+    <num>+1     =>  <num>+int(not())
+    <num-1      =>  max(range(<num>))
 
 See the full list at a later date...  
 
