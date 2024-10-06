@@ -147,11 +147,6 @@ const periodData = `66,max(str(bytes())).upper()
 91,chr(ord(max(str(zip)).upper())+int(not()))
 99,next(iter(str(copyright))).lower()`;
 
-const creditsData = `10,chr(len(str(set(bin(int())))))
-58,chr(ord(str(int()))+len(str(set(bin(int())))))
-108,chr(ord(max(bin(int())))+len(str(set(bin(int())))))
-121,max(str(type(bytes())))`;
-
 function mapCharacters(csvData) {
   const charMap = {};
   const rows = csvData.trim().split('\n');
@@ -166,14 +161,12 @@ function mapCharacters(csvData) {
 
 const charMapPeriod = mapCharacters(periodData);
 const charMapAstrix = mapCharacters(astrixData);
-const charMapNoCredits = mapCharacters(creditsData);
 
 function replaceAndJoin(input) {
   const asciiValues = Array.from(input, char => char.charCodeAt(0));
   let map = mapCharacters(csvData);
   if($('period').checked) Object.assign(map, charMapPeriod);
   if($('astrix').checked) Object.assign(map, charMapAstrix);
-  if($('nocredits').checked) Object.assign(map, charMapNoCredits)
   let out = asciiValues.map(char => map[char] || `  <COULDNT FIND ${char}>  `).join('+');
   return $('eval').checked ? `exec(${out})` : out;
 }

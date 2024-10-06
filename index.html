@@ -101,11 +101,6 @@
     <label for="astrix">Allow for '*'s</label>
   </div>
 
-  <div class="checkbox"></div>
-    <input id="nocredits" type="checkbox" />
-    <label for="nocredits">Don't use 'credits'</label>
-  </div>
-
   <textarea id="output"></textarea>
   <div class="actions">
     <span id="stats">…</span>
@@ -149,7 +144,6 @@
     $("eval").onchange = encode;
     $("period").onchange = encode;
     $("astrix").onchange = encode;
-    $('nocredits').onchange = encode;
     $("scope").onchange = encode;
     $("input").onchange = encode;
     
