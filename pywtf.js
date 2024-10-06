@@ -99,7 +99,7 @@ const csvData = `0,chr(int())
 94,chr(ord(str(int()))+ord(min(str(float()))))
 95,min(max(vars()))
 96,chr(ord(min(min(locals())))+int(not()))
-97,next(reversed(hex(ord(max(str(complex()))))))
+97,chr(max(range(ord(max(bin(int()))))))
 98,max(bin(int()))
 99,chr(ord(max(bin(int())))+int(not()))
 100,next(reversed(hex(ord(max(str(dict()))))))
@@ -147,6 +147,11 @@ const periodData = `66,max(str(bytes())).upper()
 91,chr(ord(max(str(zip)).upper())+int(not()))
 99,next(iter(str(copyright))).lower()`;
 
+const creditsData = `10,chr(len(str(set(bin(int())))))
+58,chr(ord(str(int()))+len(str(set(bin(int())))))
+108,chr(ord(max(bin(int())))+len(str(set(bin(int())))))
+121,max(str(type(bytes())))`;
+
 function mapCharacters(csvData) {
   const charMap = {};
   const rows = csvData.trim().split('\n');
@@ -161,12 +166,14 @@ function mapCharacters(csvData) {
 
 const charMapPeriod = mapCharacters(periodData);
 const charMapAstrix = mapCharacters(astrixData);
+const charMapNoCredits = mapCharacters(creditsData);
 
 function replaceAndJoin(input) {
   const asciiValues = Array.from(input, char => char.charCodeAt(0));
   let map = mapCharacters(csvData);
   if($('period').checked) Object.assign(map, charMapPeriod);
   if($('astrix').checked) Object.assign(map, charMapAstrix);
+  if($('nocredits').checked) Object.assign(map, charMapNoCredits)
   let out = asciiValues.map(char => map[char] || `  <COULDNT FIND ${char}>  `).join('+');
   return $('eval').checked ? `exec(${out})` : out;
 }
