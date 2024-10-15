@@ -79,11 +79,17 @@
 
   <script src="pywtf.js"></script>
   <script>
+    function reHighlightCode(element) {
+        element.dataset.highlighted = '';
+        hljs.highlightElement(element);
+    }
     function encode(){
       var output = replaceAndJoin($('input').value);
       $("output").innerHTML = output;
       $("stats").innerHTML = output.length + " chars";
-      hljs.highlightAll();
+      document.querySelectorAll('pre code').forEach(el => {
+          reHighlightCode(el);
+      });
     }
     function autoencode() {
       $("input").oninput = $('autoencode').checked ? encode : "";
