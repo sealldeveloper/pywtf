@@ -23,15 +23,15 @@ not())))))
 ### Basics
 
     True        =>  not()
-    False       =>  not(not())
-    None        =>  str(set().add(int()))
+    False       =>  ()in()
+    None        =>  str(set().add(()))
     0           =>  int()
-    1           =>  int(not())
-    2           =>  int(not())+int(not())
-    10          =>  int(str(int(not()))+str(int()))
-    a           =>  next(reversed(hex(ord(max(str(complex()))))))
-    <num>+1     =>  <num>+int(not())
-    <num-1      =>  max(range(<num>))
+    1           =>  (not())
+    2           =>  (not())+(not())
+    10          =>  int(str(+(not()))+str(int()))
+    a           =>  chr(max(range(ord(max(bin(int()))))))
+    <num>+1     =>  <num>+(not())
+    <num>-1      =>  max(range(<num>))
 
 See the full list at a later date...  
 
