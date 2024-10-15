@@ -15,8 +15,8 @@ The following source will do an `print(1)`:
 ```python
 exec(chr(ord(max(oct(int())))+(not()))+max(str(range(
 int())))+chr(sum(range(len(repr(str(set))))))+chr(max(
-range(ord(max(oct(int()))))))+max(str(set))+min(str(set()
-))+str(+(not()))+max(str(tuple())))
+range(ord(max(oct(int()))))))+max(str(set))+min(str(set()))+
+str(+(not()))+max(str(tuple())))
 ```
 
 ### Basics
