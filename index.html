@@ -1,80 +1,20 @@
 <html>
 <head>
   <title>PyWTF - Write any Python with only built-in functions.</title>
-  <meta name="description" content="PyWTF is an esoteric and educational programming style based on JSFuck and inspired by this tweet. It uses only built-in functions to execute code.">
+  <meta name="description" content="PyWTF is an esoteric and educational programming style based on JSFuck and inspired by this tweet. It uses only built-in functions to execute code. It currently represents all characters below 0x7f in 49 characters or less.">
   <meta charset="utf-8" />
   <meta property="og:image" content="/preview.png" />
   <meta name="viewport" content="width=device-width" />
-  <style>
-    
-    body {
-      padding: 20px;
-    }
-    
-    body, * {
-      font-family: monospace;
-      font-size: 14px;
-      line-height: 1.4em;
-    }
-    
-    h1 {
-      font-size: 2em;
-      position: absolute;
-      top: 70px;
-      font-weight: normal;
-      left: 140px;
-    }
-    
-    h2 {
-      width: 90px;
-      text-align: right;
-      padding: 50px 5px 5px;
-      background: #FFD43B;
-      color: #306998;
-      font-weight: bold;
-      font-size: 20px;
-      line-height: 1em;
-    }
-    
-    h3 {
-      font-weight: bold;
-    }
-        
-    p, li, textarea, .actions {
-      width: 100%;
-      max-width: 600px;
-    }
-    
-    textarea {
-      display: block;
-      height: 200px;
-      margin: 1em 0;
-    }
-    
-    ul.pre li{
-      white-space: pre;
-    }
-    
-    .checkbox {
-      display: inline-block;
-    }
-    
-    .actions a {
-      float: right;
-    }
-    
-    .actions {
-      clear: both;
-    }
-    
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/vs2015.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <style>body{padding:20px;background-color:#191919;color:white}*,body{font-family:monospace;font-size:14px;line-height:1.4em}h1{font-size:2em;position:absolute;top:70px;font-weight:normal;left:140px}h2{width:90px;text-align:right;padding:50px 5px 5px;background:#FFD43B;color:#306998;font-weight:bold;font-size:20px;line-height:1em}h3{font-weight:bold}.actions,li,p,textarea{width:100%;max-width:600px}textarea{display:block;height:200px;margin:1em 0}ul.pre li{white-space:pre}.checkbox{display:inline-block}.actions a{float:right}.actions{clear:both}code{color:#ffffff;font-family:monospace, monospace;padding:4px;border-radius:4px}textarea{background-color:#1e1e1e;color:white;font-family:'Courier New', Courier, monospace;border:1px solid #444;padding:10px;width:100%;height:200px;resize:none}pre{max-width:600px;overflow-wrap:break-word;white-space:pre-wrap;word-wrap:break-word;background-color:#1e1e1e;padding:10px;border-radius:5px}a:hover{color:#563ad2!important;border-bottom:1px solid #563ad2!important;text-decoration:none}a{color:#b18af8}</style>
 </head>
 <body>
   <h1>PyWTF</h1>
   
   <h2>()+<br>a-z</h2>
   
-  <p>PyWTF is an esoteric and educational programming style based on JSFuck and inspired by <a href="https://x.com/chordbug/status/1834642829919781369">this tweet</a>. It uses only built-in functions to execute code.</p>
+  <p>PyWTF is an esoteric and educational programming style based on JSFuck and inspired by <a href="https://x.com/chordbug/status/1834642829919781369">this tweet</a>. It uses only built-in functions to execute code. <b>It currently represents all characters below <code>0x7f</code> in 49 characters or less.</b></p>
   
   <p>It does not depend on a browser, so you can run it with Python.</p>
 
@@ -87,8 +27,13 @@
   <button id="encode" type="text">Encode</button>
   
   <div class="checkbox">
+    <input id="autoencode" type="checkbox" checked/>
+    <label for="autoencode">Auto-encode</label>
+  </div>
+
+  <div class="checkbox">
     <input id="eval" type="checkbox" checked />
-    <label for="eval">Eval Source</label>
+    <label for="eval">Wrap with <code>exec()</code></label>
   </div>
 
   <div class="checkbox">
@@ -98,13 +43,13 @@
   
   <div class="checkbox"></div>
     <input id="astrix" type="checkbox" />
-    <label for="astrix">Allow for '*'s</label>
+    <label for="astrix">Allow for '*'s (currently useless)</label>
   </div>
-
-  <textarea id="output"></textarea>
+  
+  <pre><code id="output" class="python"></code></pre>
   <div class="actions">
     <span id="stats">…</span>
-    <a id="run" href="#">Run This</a>
+    <!-- <a id="run" href="#">Run This</a> -->
   </div>
   
   <h3>Links</h3>
@@ -136,17 +81,20 @@
   <script>
     function encode(){
       var output = replaceAndJoin($('input').value);
-      $("output").value = output;
+      $("output").innerHTML = output;
       $("stats").innerHTML = output.length + " chars";
+      hljs.highlightAll();
     }
-  
+    function autoencode() {
+      $("input").oninput = $('autoencode').checked ? encode : "";
+      $("eval").onchange = $('autoencode').checked ? encode : "";
+      $("period").onchange = $('autoencode').checked ? encode : "";
+      $("astrix").onchange = $('autoencode').checked ? encode : "";
+      if ($('autoencode').checked) encode();
+    }
     $("encode").onclick = encode;
-    $("eval").onchange = encode;
-    $("period").onchange = encode;
-    $("astrix").onchange = encode;
-    $("scope").onchange = encode;
-    $("input").onchange = encode;
-    
+    $('autoencode').onclick = autoencode;
+    autoencode();
     encode();
   </script>
 </body>

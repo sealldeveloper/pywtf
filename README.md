@@ -1,6 +1,6 @@
 # PyWTF `a-z()+`
 
-PyWTF is an esoteric and educational programming style based on JSFuck and inspired by [this tweet](https://x.com/chordbug/status/1834642829919781369). It uses only built-in functions to execute code.
+PyWTF is an esoteric and educational programming style based on JSFuck and inspired by [this tweet](https://x.com/chordbug/status/1834642829919781369). It uses only built-in functions to execute code. **It currently represents all characters below `0x7f` in 49 characters or less.**
 
 It does not depend on a browser, so you can even run it with Python (to come).
 
@@ -13,11 +13,10 @@ By [@sealldev](https://twitter.com/sealldev) and [friends](https://github.com/se
 The following source will do an `print(1)`:
 
 ```python
-exec(chr(ord(str(int(not())+int(not())))+ord(next(reversed(str(object())))))+
-next(iter(str(range(not()))))+chr(ord(str(int()))+ord(next(reversed(hex(ord(
-max(str(bytearray()))))))))+chr(int(str(int(not()))+str(int(not()))+str(int()
-)))+max(str(set()))+min(str(set()))+str(int(not()))+next(reversed(str(range(
-not())))))
+exec(chr(ord(max(oct(int())))+(not()))+max(str(range(
+int())))+chr(sum(range(len(repr(str(set))))))+chr(max(
+range(ord(max(oct(int()))))))+max(str(set))+min(str(set()
+))+str(+(not()))+max(str(tuple())))
 ```
 
 ### Basics
