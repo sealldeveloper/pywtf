@@ -37,6 +37,7 @@ jobs:
         run: python verification.py
 
       - name: Check if verification passed
+        shell: bash # Use Bash for this step
         run: |
           if [ $? -eq 0 ]; then
             echo "Verification passed for Python ${{ matrix.python-version }} on ${{ matrix.os }}."
