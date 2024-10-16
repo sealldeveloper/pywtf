@@ -43,3 +43,33 @@ jobs:
             echo "Verification failed for Python ${{ matrix.python-version }}."
             exit 1
           fi
+
+  verify-latest-python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up latest Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # This will use the latest Python 3.x version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+
+      - name: Run verification script
+        run: python verification.py
+
+      - name: Check if verification passed
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "Verification passed for latest Python version."
+          else
+            echo "Verification failed for latest Python version."
+            exit 1
+          fi
