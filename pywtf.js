@@ -30,9 +30,9 @@ const csvData = `0,chr(int())
 25,chr(len(str(ascii)))
 26,chr(len(ascii(str(hash))))
 27,chr(len(ascii(str(ascii))))
-28,chr(len(str(type(iter(str())))))
-29,chr(len(str(type(iter(str()))))+(not()))
-30,chr(len(str(type(iter(str()))))+(not())+(not()))
+28,chr(len(ascii(str(ascii)))+(not()))
+29,chr(len(ascii(str(ascii)))+(not())+(not()))
+30,chr(len(ascii(str(ascii)))+len(hex(int())))
 31,chr(max(range(ord(min(str(range(int())))))))
 32,min(str(bin))
 33,chr(ord(min(str(range(not()))))+(not()))
@@ -78,7 +78,7 @@ const csvData = `0,chr(int())
 73,chr(ord(str(int()))+len(str(set(str(set())))))
 74,chr(ord(next(iter(str(str))))+len(str(dict)))
 75,chr(ord(min(str(()in())))+len(str(set())))
-76,chr(ord(str(int()))+len(str(type(iter(str())))))
+76,chr(len(vars(list))+ord(max(repr(str()))))
 77,chr(max(range(sum(range(len(str(set)))))))
 78,chr(sum(range(len(str(set)))))
 79,chr(sum(range(len(str(set))))+(not()))
@@ -145,6 +145,11 @@ const periodData = `66,max(str(bytes())).upper()
 102,min(str(()in())).lower()`;
 
 const astrixData = `104,chr(len(str(set))*len(bin(ord(str(int())))))`
+
+const newerPython = `28,chr(len(str(type(iter(str())))))
+29,chr(len(str(type(iter(str()))))+(not()))
+30,chr(len(str(type(iter(str()))))+(not())+(not()))
+76,chr(ord(str(int()))+len(str(type(iter(str())))))`
 
 function mapCharacters(csvData) {
   const charMap = {};
