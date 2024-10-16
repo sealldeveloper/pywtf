@@ -1,0 +1,57 @@
+name: Find Shortest Combination
+
+on:
+  push:
+    branches:
+      - main  # Adjust this to your default branch if necessary
+
+jobs:
+  find_candidates:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'  # Specify your required Python version
+
+      - name: Run find-num.py
+        id: find_candidates
+        run: |
+          python find-num.py data/originalMappings.csv --range 255 > results.txt || true
+          cat results.txt
+
+      - name: Check for new candidates
+        id: check_candidates
+        run: |
+          if grep -q "No combination found" results.txt; then
+            echo "No new candidates found."
+            echo "::set-output name=new_candidates::false"
+          else
+            echo "New candidates found."
+            echo "::set-output name=new_candidates::true"
+          fi
+
+      - name: Create Pull Request
+        if: steps.check_candidates.outputs.new_candidates == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b new-candidates-branch
+          # Assuming you want to modify a specific file or create a new one based on results.txt
+          cp results.txt new_candidates.txt
+          git add new_candidates.txt
+          git commit -m "Add new candidate combinations"
+          git push origin new-candidates-branch
+
+      - name: Create Pull Request
+        if: steps.check_candidates.outputs.new_candidates == 'true'
+        uses: peter-evans/create-pull-request@v3
+        with:
+          title: "New Candidate Combinations Found"
+          body: "This pull request includes new candidate combinations found by find-num.py."
+          base: main  # Adjust this to your default branch if necessary
+          head: new-candidates-branch
