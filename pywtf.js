@@ -136,12 +136,15 @@ const periodData = `66,max(str(bytes())).upper()
 79,max(oct(int())).upper()
 82,next(iter(str(range(not())))).upper()
 83,max(str(not(not()))).upper()
-85,max(str(not())).upper()
+85,max(str(bin)).upper()
 86,max(str(vars)).upper()
 87,max(str(pow)).upper()
-88,max(str(object())).upper()
+88,max(hex(int())).upper()
 89,max(str(credits)).upper()
-90,max(str(zip)).upper()`;
+90,max(str(zip)).upper()
+102,min(str(()in())).lower()`;
+
+const astrixData = `104,chr(len(str(set))*len(bin(ord(str(int())))))`
 
 function mapCharacters(csvData) {
   const charMap = {};
