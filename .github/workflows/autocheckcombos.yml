@@ -23,7 +23,7 @@ jobs:
       - name: Run find-num.py
         id: find_num
         run: |
-          python find-num.py --range 255 > result.txt
+          python find-num.py --range 255 | tee result.txt
           echo "::set-output name=result::$(cat result.txt)"
 
       - name: Check for new candidates and existing combinations
