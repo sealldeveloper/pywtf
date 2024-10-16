@@ -18,17 +18,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'  # Specify your required Python version
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install numpy  # Include other dependencies as needed
+          python-version: '3.9'  # Specify your required Python version
 
       - name: Run find-num.py
         id: find_num
         run: |
-          python find-num.py > result.txt
+          python find-num.py --range 255 > result.txt
           echo "::set-output name=result::$(cat result.txt)"
 
       - name: Check for new candidates and existing combinations
