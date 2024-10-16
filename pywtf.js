@@ -148,8 +148,7 @@ const astrixData = `104,chr(len(str(set))*len(bin(ord(str(int())))))`
 
 const newerPython = `28,chr(len(str(type(iter(str())))))
 29,chr(len(str(type(iter(str()))))+(not()))
-30,chr(len(str(type(iter(str()))))+(not())+(not()))
-76,chr(ord(str(int()))+len(str(type(iter(str())))))`
+30,chr(len(str(type(iter(str()))))+(not())+(not()))`
 
 function mapCharacters(csvData) {
   const charMap = {};
