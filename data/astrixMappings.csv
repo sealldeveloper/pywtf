@@ -1,0 +1,1 @@
+104,chr(len(str(set))*len(bin(ord(str(int())))))

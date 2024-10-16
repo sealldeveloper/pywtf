@@ -20,7 +20,7 @@
 
   <p>Also a very silly pyjail solver.</p>
   
-  <p>Use the form below to convert your own script. Uncheck "eval source" to
+  <p>Use the form below to convert your own script. Uncheck "Wrap with <code>exec()</code>" to
   get back a plain string.</p>
 
   <textarea id="input" value="print('PyWTF')"></textarea>
@@ -38,12 +38,17 @@
 
   <div class="checkbox">
     <input id="period" type="checkbox" />
-    <label for="period">Allow for '.'s</label>
+    <label for="period">Allow '.'s</label>
   </div>
   
   <div class="checkbox"></div>
     <input id="astrix" type="checkbox" />
-    <label for="astrix">Allow for '*'s (currently near useless)</label>
+    <label for="astrix">Allow '*'s (not much optimisation yet)</label>
+  </div>
+
+  <div class="checkbox"></div>
+    <input id="newerPython" type="checkbox" />
+    <label for="newerPython">Python 3.11+</label>
   </div>
   
   <pre><code id="output" class="python"></code></pre>
@@ -83,25 +88,43 @@
         element.dataset.highlighted = '';
         hljs.highlightElement(element);
     }
-    function encode(){
-      var output = replaceAndJoin($('input').value);
-      $("output").innerHTML = output;
-      $("stats").innerHTML = output.length + " chars";
-      document.querySelectorAll('pre code').forEach(el => {
-          reHighlightCode(el);
-      });
+
+    function encode() {
+        replaceAndJoin($('input').value)
+            .then(output => {
+                $("output").innerHTML = output;
+                $("stats").innerHTML = output.length + " chars";
+                document.querySelectorAll('pre code').forEach(el => {
+                    reHighlightCode(el);
+                });
+            })
+            .catch(error => {
+                console.error('Error in encode function:', error);
+                $("output").innerHTML = 'An error occurred while processing the input.';
+                $("stats").innerHTML = '';
+            });
     }
+
     function autoencode() {
-      $("input").oninput = $('autoencode').checked ? encode : "";
-      $("eval").onchange = $('autoencode').checked ? encode : "";
-      $("period").onchange = $('autoencode').checked ? encode : "";
-      $("astrix").onchange = $('autoencode').checked ? encode : "";
-      if ($('autoencode').checked) encode();
+        const autoencodeEnabled = $('autoencode').checked;
+        const autoencodeFunction = autoencodeEnabled ? () => setTimeout(encode, 0) : null;
+
+        $("input").oninput = autoencodeFunction;
+        $("eval").onchange = autoencodeFunction;
+        $("period").onchange = autoencodeFunction;
+        $("astrix").onchange = autoencodeFunction;
+        $("newerPython").onchange = autoencodeFunction;
+
+        if (autoencodeEnabled) encode();
     }
+
     $("encode").onclick = encode;
     $('autoencode').onclick = autoencode;
+
+    // Initial setup
     autoencode();
     encode();
+
   </script>
 </body>
 </html>

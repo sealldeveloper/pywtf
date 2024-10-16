@@ -1,173 +1,75 @@
-function $(id){
+function $(id) {
   return document.getElementById(id);
 }
 
-const csvData = `0,chr(int())
-1,chr(not())
-2,chr((not())+(not()))
-3,chr(len(hex(int())))
-4,chr(len(str(not())))
-5,chr(len(str(set())))
-6,chr(len(str(set()))+(not()))
-7,chr(len(repr(str(set()))))
-8,chr(len(vars(reversed)))
-9,chr(len(repr(repr(chr(int())))))
-10,min(str(credits))
-11,chr(len(str(range(int()))))
-12,chr(len(frozenset(str(type))))
-13,chr(len(str(set)))
-14,chr(len(str(dict)))
-15,chr(len(str(bytes)))
-16,chr(len(str(object)))
-17,chr(len(str(complex)))
-18,chr(len(str(reversed)))
-19,chr(len(str(frozenset)))
-20,chr(len(str(set(str(not())))))
-21,chr(len(str(set(str(not()))))+(not()))
-22,chr(len(vars(tuple)))
-23,chr(len(str(bin)))
-24,chr(len(str(hash)))
-25,chr(len(str(ascii)))
-26,chr(len(ascii(str(hash))))
-27,chr(len(ascii(str(ascii))))
-28,chr(len(ascii(str(ascii)))+(not()))
-29,chr(len(ascii(str(ascii)))+(not())+(not()))
-30,chr(len(ascii(str(ascii)))+len(hex(int())))
-31,chr(max(range(ord(min(str(range(int())))))))
-32,min(str(bin))
-33,chr(ord(min(str(range(not()))))+(not()))
-34,min(repr(repr(str())))
-35,chr(len(vars(dict)))
-36,chr(len(ascii(type(bin))))
-37,chr(len(vars(list)))
-38,chr(max(range(ord(max(repr(str()))))))
-39,max(repr(str()))
-40,min(str(set()))
-41,max(str(tuple()))
-42,chr(ord(max(str(tuple())))+(not()))
-43,chr(ord(max(str(tuple())))+(not())+(not()))
-44,max(str(tuple(repr(str()))))
-45,chr(sum(range(int(str(+(not()))+str(int())))))
-46,min(str(float()))
-47,chr(len(vars(set)))
-48,str(int())
-49,str(+(not()))
-50,str((not())+(not()))
-51,str(len(hex(int())))
-52,str(len(str(not())))
-53,str(len(str(set())))
-54,str(len(str(complex(not()))))
-55,max(str(ord(max(str(not())))))
-56,max(str(ord(str(int()))))
-57,max(str(ord(str(+(not())))))
-58,chr(ord(str(int()))+ord(min(str(credits))))
-59,chr(ord(str(int()))+len(str(range(int()))))
-60,next(iter(str(bin)))
-61,chr(ord(str(int()))+len(str(type(int()))))
-62,next(reversed(str(object())))
-63,chr(ord(str(int()))+len(str(type(float()))))
-64,chr(ord(str(int()))+len(str(type(object()))))
-65,chr(ord(str(int()))+len(str(type(complex()))))
-66,chr(sum(range(len(set(str(type(bytes())))))))
-67,next(iter(str(copyright)))
-68,chr(ord(next(iter(str(copyright))))+(not()))
-69,chr(max(range(ord(min(str(()in()))))))
-70,min(str(()in()))
-71,chr(ord(next(iter(str(()in()))))+(not()))
-72,chr(ord(min(str(()in())))+(not())+(not()))
-73,chr(ord(str(int()))+len(str(set(str(set())))))
-74,chr(ord(next(iter(str(str))))+len(str(dict)))
-75,chr(ord(min(str(()in())))+len(str(set())))
-76,chr(len(vars(list))+ord(max(repr(str()))))
-77,chr(max(range(sum(range(len(str(set)))))))
-78,chr(sum(range(len(str(set)))))
-79,chr(sum(range(len(str(set))))+(not()))
-80,chr(ord(min(str(set())))+ord(min(str(set()))))
-81,chr(sum(range(len(str(set))))+len(hex(int())))
-82,chr(sum(range(len(str(set))))+len(str(not())))
-83,chr(max(range(ord(min(str(not()))))))
-84,min(str(not()))
-85,chr(ord(min(str(not())))+(not()))
-86,chr(ord(min(str(not())))+(not())+(not()))
-87,chr(ord(min(str(not())))+len(hex(int())))
-88,chr(ord(min(str(not())))+len(str(not())))
-89,chr(ord(min(str(not())))+len(str(set())))
-90,chr(max(range(sum(range(len(str(dict)))))))
-91,chr(sum(range(len(str(dict)))))
-92,max(repr(repr(repr(str()))))
-93,chr(ord(max(repr(repr(repr(str())))))+(not()))
-94,chr(ord(str(int()))+ord(min(str(float()))))
-95,chr(ord(min(str(()in())))+len(str(ascii)))
-96,chr(ord(min(min(vars())))+(not()))
-97,chr(max(range(ord(max(bin(int()))))))
-98,max(bin(int()))
-99,chr(ord(max(bin(int())))+(not()))
-100,next(reversed(hex(ord(max(str(dict()))))))
-101,next(reversed(str(not())))
-102,next(iter(str(frozenset())))
-103,chr(ord(next(iter(str(frozenset()))))+(not()))
-104,chr(max(range(sum(range(len(repr(str(set))))))))
-105,chr(sum(range(len(repr(str(set))))))
-106,max(str(complex()))
-107,chr(ord(max(str(complex())))+(not()))
-108,chr(ord(max(str(complex())))+(not())+(not()))
-109,chr(ord(max(str(complex())))+len(hex(int())))
-110,chr(max(range(ord(max(oct(int()))))))
-111,max(oct(int()))
-112,chr(ord(max(oct(int())))+(not()))
-113,chr(ord(max(oct(int())))+(not())+(not()))
-114,max(str(range(int())))
-115,max(str(range))
-116,max(str(set))
-117,max(str(bin))
-118,max(str(vars))
-119,max(str(pow))
-120,max(str(hex))
-121,max(str(type))
-122,max(str(zip))
-123,min(str(dict()))
-124,chr(ord(min(str(dict())))+(not()))
-125,max(str(dict()))
-126,chr(ord(max(str(dict())))+(not()))`;
+// csv data loading
+async function loadCSV(filename) {
+  try {
+    const response = await fetch(`data/${filename}.csv`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.text();
+  } catch (error) {
+    console.error(`Error loading ${filename}.csv:`, error);
+    return '';
+  }
+}
 
-const periodData = `66,max(str(bytes())).upper()
-69,next(reversed(str(not()))).upper()
-74,max(str(complex())).upper()
-79,max(oct(int())).upper()
-82,next(iter(str(range(not())))).upper()
-83,max(str(not(not()))).upper()
-85,max(str(bin)).upper()
-86,max(str(vars)).upper()
-87,max(str(pow)).upper()
-88,max(hex(int())).upper()
-89,max(str(credits)).upper()
-90,max(str(zip)).upper()
-102,min(str(()in())).lower()`;
-
-const astrixData = `104,chr(len(str(set))*len(bin(ord(str(int())))))`
-
-const newerPython = `28,chr(len(str(type(iter(str())))))
-29,chr(len(str(type(iter(str()))))+(not()))
-30,chr(len(str(type(iter(str()))))+(not())+(not()))`
-
+// character mapping
 function mapCharacters(csvData) {
   const charMap = {};
   const rows = csvData.trim().split('\n');
-  rows.slice(1).forEach(row => {
+  rows.forEach(row => {
     const [char, func] = row.split(',');
     if (char && func) {
       charMap[char] = func;
     }
   });
-  return charMap
+  return charMap;
 }
 
-const charMapPeriod = mapCharacters(periodData);
+// global vars
+let originalMappings, periodMappings, astrixMappings, newerPythonMappings;
+let dataLoaded = false;
 
-function replaceAndJoin(input) {
+// load all csv data
+async function loadAllData() {
+  originalMappings = await loadCSV('originalMappings');
+  periodMappings = await loadCSV('periodMappings');
+  astrixMappings = await loadCSV('astrixMappings');
+  newerPythonMappings = await loadCSV('newerPythonMappings');
+  dataLoaded = true;
+}
+
+// initialise the loading of all the data
+replaceAndJoin($('input').value)
+            .then(output => {}).catch(error=>{});
+
+async function replaceAndJoin(input) {
+  // ensure all data is loaded
+  if (!dataLoaded) {
+    await loadAllData();
+  }
+
   const asciiValues = Array.from(input, char => char.charCodeAt(0));
-  let map = mapCharacters(csvData);
-  if($('period').checked) Object.assign(map, charMapPeriod);
+  let map = mapCharacters(originalMappings);
+
+  if ($('period').checked) {
+    const periodMap = mapCharacters(periodMappings);
+    Object.assign(map, periodMap);
+  }
+
+  if ($('astrix').checked) {
+    const astrixMap = mapCharacters(astrixMappings);
+    Object.assign(map, astrixMap);
+  }
+
+  if ($('newerPython').checked) {
+    const newerPythonMap = mapCharacters(newerPythonMappings);
+    Object.assign(map, newerPythonMap);
+  }
+
   let out = asciiValues.map(char => map[char] || `  <COULDNT FIND ${char}>  `).join('+');
   return $('eval').checked ? `exec(${out})` : out;
 }
