@@ -1,7 +1,7 @@
+from io import StringIO
 import pandas as pd
-import re
-import ast
 import sys
+import re
 
 def extract_csv_data(js_file):
     with open(js_file, 'r') as file:
@@ -12,7 +12,7 @@ def extract_csv_data(js_file):
     return None
 
 def verify_python_code(csv_data):
-    df = pd.read_csv(pd.compat.StringIO(csv_data), header=None, names=['ASCIINUM', 'PYTHONCODE'])
+    df = pd.read_csv(StringIO(csv_data), header=None, names=['ASCIINUM', 'PYTHONCODE'])
     
     error_count = 0
     
@@ -25,8 +25,6 @@ def verify_python_code(csv_data):
             if result != int(asciinum):
                 print(f"Mismatch: ASCIINUM {asciinum}, Python code: {python_code}, Result: {result}")
                 error_count += 1
-            else:
-                print(f"Verified: ASCIINUM {asciinum}, Python code: {python_code}")
         except Exception as e:
             print(f"Error evaluating: ASCIINUM {asciinum}, Python code: {python_code}")
             print(f"Error message: {str(e)}")

@@ -1,9 +1,6 @@
 name: Python Code Verification
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -11,14 +8,21 @@ on:
 jobs:
   verify-python-code:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
+      fail-fast: false
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
@@ -27,3 +31,12 @@ jobs:
 
       - name: Run verification script
         run: python verification.py
+
+      - name: Check if verification passed
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "Verification passed for Python ${{ matrix.python-version }}."
+          else
+            echo "Verification failed for Python ${{ matrix.python-version }}."
+            exit 1
+          fi
