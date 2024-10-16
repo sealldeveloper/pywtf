@@ -21,7 +21,8 @@ def find_shortest_combination(target, codes, max_length=3):
         try:
             code = process_code(code)
             ascii_value = eval(code)  # Assuming each code evaluates to its ASCII value
-            ascii_values[code] = ascii_value
+            if ascii_value <= 126 or len(code) < 35:
+                ascii_values[code] = ascii_value
             # print(f"Code: {code}, ASCII Value: {ascii_value}")  # Debug print
         except Exception as e:
             print(f"Error evaluating code '{code}': {e}")  # Debug print
