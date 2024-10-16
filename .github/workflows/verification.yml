@@ -26,4 +26,4 @@ jobs:
           pip install pandas
 
       - name: Run verification script
-        run: python verify_python_code.py
+        run: python verification.py
