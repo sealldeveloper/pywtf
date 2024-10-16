@@ -115,8 +115,8 @@ def find_combinations_in_range(n, codes):
                 print(f"{number},{result}")
             if number not in ascii_values.keys():
                 print(f"{number},{result}")
-            # else:
-            #     print(f"{number}: {result} (Length: {length})")
+            else:
+                print(f"(Existing) {number}: {result} (Length: {length})")
         else:
             print(f"{number}: No combination found")
 

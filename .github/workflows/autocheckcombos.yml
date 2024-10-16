@@ -1,12 +1,14 @@
-name: Find Shortest Combination
+name: Find Shorter Candidates
 
 on:
   push:
     branches:
-      - main  # Adjust this to your default branch if necessary
+      - main
+  schedule:
+    - cron: '0 0 1 * *' #once a month
 
 jobs:
-  find_candidates:
+  find-shorter-candidates:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,44 +16,52 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.9'  # Specify your required Python version
+          python-version: '3.12'  # Specify your required Python version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy  # Include other dependencies as needed
 
       - name: Run find-num.py
-        id: find_candidates
+        id: find_num
         run: |
-          python find-num.py data/originalMappings.csv --range 255 > results.txt || true
-          cat results.txt
+          python find-num.py > result.txt
+          echo "::set-output name=result::$(cat result.txt)"
 
-      - name: Check for new candidates
+      - name: Check for new candidates and existing combinations
         id: check_candidates
         run: |
-          if grep -q "No combination found" results.txt; then
-            echo "No new candidates found."
-            echo "::set-output name=new_candidates::false"
-          else
-            echo "New candidates found."
+          NEW_CANDIDATES_FOUND=false
+          while IFS= read -r line; do
+            if [[ "$line" == *"(Existing)"* ]]; then
+              echo "$line" >> existing_combinations.txt
+            elif [[ "$line" == *","* ]]; then
+              NEW_CANDIDATES_FOUND=true
+            fi
+          done < result.txt
+
+          if [ "$NEW_CANDIDATES_FOUND" = true ]; then
             echo "::set-output name=new_candidates::true"
+          else
+            echo "::set-output name=new_candidates::false"
           fi
 
-      - name: Create Pull Request
-        if: steps.check_candidates.outputs.new_candidates == 'true'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git checkout -b new-candidates-branch
-          # Assuming you want to modify a specific file or create a new one based on results.txt
-          cp results.txt new_candidates.txt
-          git add new_candidates.txt
-          git commit -m "Add new candidate combinations"
-          git push origin new-candidates-branch
-
-      - name: Create Pull Request
+      - name: Create Pull Request for New Candidates
         if: steps.check_candidates.outputs.new_candidates == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
-          title: "New Candidate Combinations Found"
-          body: "This pull request includes new candidate combinations found by find-num.py."
-          base: main  # Adjust this to your default branch if necessary
-          head: new-candidates-branch
+          title: "Add new shorter candidates"
+          body: "This PR adds new shorter candidates found by find-num.py."
+          base: main
+          branch: add-shorter-candidates-branch
+
+      - name: Upload Existing Combinations Log
+        if: steps.check_candidates.outputs.new_candidates == 'false'
+        uses: actions/upload-artifact@v3
+        with:
+          name: existing-combinations-log
+          path: existing_combinations.txt
+
