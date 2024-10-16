@@ -10,9 +10,10 @@ on:
 
 jobs:
   verify-python-code:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ['3.9', '3.10', '3.11', '3.12', '3.x']
       fail-fast: false
 
@@ -36,10 +37,11 @@ jobs:
         run: python verification.py
 
       - name: Check if verification passed
+        shell: bash # Use Bash for this step
         run: |
           if [ $? -eq 0 ]; then
-            echo "Verification passed for Python ${{ matrix.python-version }}."
+            echo "Verification passed for Python ${{ matrix.python-version }} on ${{ matrix.os }}."
           else
-            echo "Verification failed for Python ${{ matrix.python-version }}."
+            echo "Verification failed for Python ${{ matrix.python-version }} on ${{ matrix.os }}."
             exit 1
           fi
