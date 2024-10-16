@@ -1,3 +1,2 @@
 28,chr(len(str(type(iter(str())))))
 29,chr(len(str(type(iter(str()))))+(not()))
-30,chr(len(str(type(iter(str()))))+(not())+(not()))
