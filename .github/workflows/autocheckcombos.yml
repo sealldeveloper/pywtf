@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'data/originalMappings.csv'  # This will trigger for any file change in the data directory
+      - 'data/originalMappings.csv'
   pull_request:
     branches:
       - main
     paths:
-      - 'data/originalMappings.csv'  # This will trigger for any file change in the data directory
+      - 'data/originalMappings.csv'
   schedule:
     - cron: '0 0 1 * *' #once a month
 
@@ -28,7 +28,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'  # Specify your required Python version
+          python-version: '3.9'
       
       - name: Install dependencies
         id: dependencies
@@ -44,17 +44,23 @@ jobs:
         id: update_mappings
         run: |
           NEW_CANDIDATES_FOUND=false
+          CHANGES=""
           while IFS= read -r line; do
             if [[ "$line" =~ ^[0-9] ]]; then
               NEW_CANDIDATES_FOUND=true
               ASCII_NUM=$(echo $line | cut -d',' -f1)
               NEW_PYTHON_CODE=$(echo $line | cut -d',' -f2)
+              OLD_PYTHON_CODE=$(grep "^$ASCII_NUM," data/originalMappings.csv | cut -d',' -f2)
               sed -i "s/^$ASCII_NUM,.*/$ASCII_NUM,$NEW_PYTHON_CODE/" data/originalMappings.csv
+              CHANGES+="- ASCII $ASCII_NUM: '$OLD_PYTHON_CODE' → '$NEW_PYTHON_CODE'\n"
             fi
           done < result.txt
 
           if [ "$NEW_CANDIDATES_FOUND" = true ]; then
             echo "new_candidates=true" >> $GITHUB_OUTPUT
+            echo "changes<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
             echo "new_candidates=false" >> $GITHUB_OUTPUT
           fi
@@ -66,14 +72,32 @@ jobs:
       - name: Create or Update Pull Request
         if: steps.update_mappings.outputs.new_candidates == 'true'
         uses: peter-evans/create-pull-request@v5
+        id: cpr
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Update originalMappings.csv with shorter candidates"
-          body: "This PR updates data/originalMappings.csv with new shorter candidates found by find-num.py."
+          title: "🔄 Update originalMappings.csv with Shorter Candidates"
+          body: |
+            ## 🚀 Automatic Shorter Candidates
+
+            This PR updates `data/originalMappings.csv` with new shorter candidates discovered by `find-num.py`.
+
+            ### 📊 Changes
+
+            The following entries in the mappings have been updated:
+
+            ```
+            ${{ steps.update_mappings.outputs.changes }}
+            ```
+
+            Enjoy 🎉
           base: main
           branch: update-original-mappings
           commit-message: "Update originalMappings.csv with shorter candidates"
           delete-branch: false
+      
+      - name: Output Pull Request Number
+        if: steps.cpr.outputs.pull-request-number
+        run: echo "pull_request_number=${{ steps.cpr.outputs.pull-request-number }}" >> $GITHUB_OUTPUT
 
       - name: Upload Existing Combinations Log
         if: steps.update_mappings.outputs.new_candidates == 'false'
