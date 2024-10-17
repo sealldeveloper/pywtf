@@ -45,19 +45,22 @@ jobs:
         run: |
           NEW_CANDIDATES_FOUND=false
           CHANGES=""
-          NEWLINE=$(printf "\\$(printf '%03o' "10")")
           while IFS= read -r line; do
             if [[ "$line" =~ ^[0-9] ]]; then
               NEW_CANDIDATES_FOUND=true
-              ASCII_NUM=$(echo $line | cut -d',' -f1)
-              NEW_PYTHON_CODE=$(echo $line | cut -d',' -f2)
+              ASCII_NUM=$(echo "$line" | cut -d',' -f1)
+              NEW_PYTHON_CODE=$(echo "$line" | cut -d',' -f2)
               OLD_PYTHON_CODE=$(grep "^$ASCII_NUM," data/originalMappings.csv | cut -d',' -f2)
               OLD_LENGTH=${#OLD_PYTHON_CODE}
               NEW_LENGTH=${#NEW_PYTHON_CODE}
               DIFFERENCE=$((OLD_LENGTH - NEW_LENGTH))
               ASCII_CHAR=$(printf "\\$(printf '%03o' "$ASCII_NUM")")
+              
+              # Update CSV file
               sed -i "s/^$ASCII_NUM,.*/$ASCII_NUM,$NEW_PYTHON_CODE/" data/originalMappings.csv
-              CHANGES="${CHANGES}- $ASCII_NUM: `$OLD_PYTHON_CODE` → `$NEW_PYTHON_CODE` (**${DIFFERENCE}** characters shorter!)${NEWLINE}"
+              
+              # Append changes with newline
+              CHANGES="${CHANGES}- ASCII $ASCII_NUM ($ASCII_CHAR): \`$OLD_PYTHON_CODE\` → \`$NEW_PYTHON_CODE\` (**${DIFFERENCE}** characters shorter!)$(printf '\n')"
             fi
           done < result.txt
 
@@ -69,6 +72,7 @@ jobs:
           else
             echo "new_candidates=false" >> $GITHUB_OUTPUT
           fi
+
 
       - name: Remove result.txt if new candidates found
         if: steps.update_mappings.outputs.new_candidates == 'true'
