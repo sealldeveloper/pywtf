@@ -56,7 +56,8 @@ jobs:
               DIFFERENCE=$((OLD_LENGTH - NEW_LENGTH))
               ASCII_CHAR=$(printf "\\$(printf '%03o' "$ASCII_NUM")")
               sed -i "s/^$ASCII_NUM,.*/$ASCII_NUM,$NEW_PYTHON_CODE/" data/originalMappings.csv
-              CHANGES+="- ASCII $ASCII_NUM ($ASCII_CHAR): '$OLD_PYTHON_CODE' → '$NEW_PYTHON_CODE' (${DIFFERENCE} characters shorter)\n"
+              CHANGES="${CHANGES}- $ASCII_NUM: `$OLD_PYTHON_CODE` → `$NEW_PYTHON_CODE` (**${DIFFERENCE}** characters shorter!)
+"
             fi
           done < result.txt
 
