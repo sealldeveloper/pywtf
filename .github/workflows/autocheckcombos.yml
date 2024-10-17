@@ -27,7 +27,7 @@ jobs:
         id: find_num
         run: |
           python find-num.py --range 255 | tee result.txt
-          echo "result=$(cat result.txt)" >> $GITHUB_OUTPUT
+          echo "::set-output name=result::$(cat result.txt)"
 
       - name: Check for new candidates and existing combinations
         id: check_candidates
@@ -41,7 +41,11 @@ jobs:
             fi
           done < result.txt
 
-          echo "new_candidates=$NEW_CANDIDATES_FOUND" >> $GITHUB_OUTPUT
+          if [ "$NEW_CANDIDATES_FOUND" = true ]; then
+            echo "::set-output name=new_candidates::true"
+          else
+            echo "::set-output name=new_candidates::false"
+          fi
 
       - name: Create Pull Request for New Candidates
         if: steps.check_candidates.outputs.new_candidates == 'true'
