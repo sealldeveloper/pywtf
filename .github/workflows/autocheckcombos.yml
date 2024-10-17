@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -26,8 +26,8 @@ jobs:
       - name: Run find-num.py
         id: find_num
         run: |
-          python find-num.py --range 255 | tee result.txt
-          echo "::set-output name=result::$(cat result.txt)"
+          python find-num.py --range 5 | tee result.txt
+          echo "result=$(cat result.txt)" >> $GITHUB_OUTPUT
 
       - name: Check for new candidates and existing combinations
         id: check_candidates
@@ -42,14 +42,14 @@ jobs:
           done < result.txt
 
           if [ "$NEW_CANDIDATES_FOUND" = true ]; then
-            echo "::set-output name=new_candidates::true"
+            echo "new_candidates=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=new_candidates::false"
+            echo "new_candidates=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Create Pull Request for New Candidates
         if: steps.check_candidates.outputs.new_candidates == 'true'
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "Add new shorter candidates"
