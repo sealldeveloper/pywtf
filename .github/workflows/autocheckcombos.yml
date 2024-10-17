@@ -10,6 +10,9 @@ on:
 jobs:
   find-shorter-candidates:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -28,8 +31,8 @@ jobs:
       - name: Run find-num.py
         id: find_num
         run: |
-          python find-num.py > result.txt
-          echo "::set-output name=result::$(cat result.txt)"
+          python find-num.py --range 255 | tee result.txt
+          echo "result=$(cat result.txt)" >> $GITHUB_OUTPUT
 
       - name: Check for new candidates and existing combinations
         id: check_candidates
@@ -38,21 +41,18 @@ jobs:
           while IFS= read -r line; do
             if [[ "$line" == *"(Existing)"* ]]; then
               echo "$line" >> existing_combinations.txt
-            elif [[ "$line" == *","* ]]; then
+            elif [[ "$line" =~ ^[0-9] ]]; then
               NEW_CANDIDATES_FOUND=true
             fi
           done < result.txt
 
-          if [ "$NEW_CANDIDATES_FOUND" = true ]; then
-            echo "::set-output name=new_candidates::true"
-          else
-            echo "::set-output name=new_candidates::false"
-          fi
+          echo "new_candidates=$NEW_CANDIDATES_FOUND" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request for New Candidates
         if: steps.check_candidates.outputs.new_candidates == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           title: "Add new shorter candidates"
           body: "This PR adds new shorter candidates found by find-num.py."
           base: main
@@ -64,4 +64,3 @@ jobs:
         with:
           name: existing-combinations-log
           path: existing_combinations.txt
-
