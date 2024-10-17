@@ -1,8 +1,12 @@
 import argparse
 import csv
-import itertools
+from functools import lru_cache
 import sys
+from collections import defaultdict
+from itertools import combinations as iter_combinations
 
+
+@lru_cache(maxsize=None)
 def process_code(code):
     """Process the Python code segment."""
     if code.startswith('chr(') and code.endswith(')'):
@@ -12,7 +16,7 @@ def process_code(code):
     else:
         return f"ord({code})"
 
-def find_shortest_combination(target, codes, max_length=3):
+def find_shortest_combination(target, codes, max_length=4):
     """Find the shortest combination of codes that evaluates to the target ASCII number."""
     ascii_values = {}
     
@@ -20,65 +24,32 @@ def find_shortest_combination(target, codes, max_length=3):
     for code in codes:
         try:
             code = process_code(code)
-            ascii_value = eval(code)  # Assuming each code evaluates to its ASCII value
-            if ascii_value <= 126 or len(code) < 35:
-                ascii_values[code] = ascii_value
-            # print(f"Code: {code}, ASCII Value: {ascii_value}")  # Debug print
-        except Exception as e:
-            print(f"Error evaluating code '{code}': {e}")  # Debug print
+            ascii_value = eval(code)
+            ascii_values[code] = ascii_value
+        except Exception:
             continue
 
     shortest_result = None
     shortest_length = float('inf')
 
-    # Check each code individually
-    for code, value in ascii_values.items():
-        if value == target:
-            expression = code
-            current_length = len(f"chr({expression})")
-            if current_length < shortest_length:
-                shortest_result = f"chr({expression})"
-                shortest_length = current_length
-            # print(f"Found single: {code} -> {value} = {target}")  # Debug print
+    # Helper function to update shortest result
+    def update_shortest(expression):
+        nonlocal shortest_result, shortest_length
+        current_length = len(f"chr({expression})")
+        if current_length < shortest_length:
+            shortest_result = f"chr({expression})"
+            shortest_length = current_length
 
-    # Check pairs of codes
-    for combo in itertools.combinations(ascii_values.items(), 2):  # Pairs
-        (code1, val1), (code2, val2) = combo
-        if val1 + val2 == target:
-            expression = f"{code1}+{code2}"
-            current_length = len(f"chr({expression})")
-            if current_length < shortest_length:
-                shortest_result = f"chr({expression})"
-                shortest_length = current_length
-            # print(f"Found pair: {code1}, {code2} -> {val1} + {val2} = {target}")  # Debug print
+    # Check combinations of codes
+    for length in range(1, max_length + 1):
+        for combo in combinations(ascii_values.items(), length):
+            if sum(val for _, val in combo) == target:
+                expression = "+".join(code for code, _ in combo)
+                update_shortest(expression)
+                if length == 1:  # If we found a single code match, we can stop
+                    return shortest_result, shortest_length
 
-    # Check triplets of codes
-    for combo in itertools.combinations(ascii_values.items(), 3):  # Triplets
-        (code1, val1), (code2, val2), (code3, val3) = combo
-        if val1 + val2 + val3 == target:
-            expression = f"{code1}+{code2}+{code3}"
-            current_length = len(f"chr({expression})")
-            if current_length < shortest_length:
-                shortest_result = f"chr({expression})"
-                shortest_length = current_length
-            # print(f"Found triplet: {code1}, {code2}, {code3} -> {val1} + {val2} + {val3} = {target}")  # Debug print
-    
-    # Check quads of codes
-    for combo in itertools.combinations(ascii_values.items(), 4):  # Triplets
-        (code1, val1), (code2, val2), (code3, val3), (code4, val4) = combo
-        if val1 + val2 + val3 + val4 == target:
-            expression = f"{code1}+{code2}+{code3}+{code4}"
-            current_length = len(f"chr({expression})")
-            if current_length < shortest_length:
-                shortest_result = f"chr({expression})"
-                shortest_length = current_length
-            # print(f"Found quad: {code1}, {code2}, {code3}, {code4} -> {val1} + {val2} + {val3} + {val4} = {target}")  # Debug print
-
-    # Return a tuple with two elements: result and length
-    if shortest_result is not None:
-        return shortest_result, shortest_length
-    else:
-        return None, None  # Ensure it returns two values
+    return shortest_result, shortest_length
 
 
 def process_file(filename):
@@ -95,28 +66,44 @@ def process_file(filename):
 
 
 def find_combinations_in_range(n, codes):
+    from itertools import combinations as iter_combinations
+    from collections import defaultdict
+
     """Find combinations for all numbers from 0 to n."""
     ascii_values = {}
+    value_to_codes = defaultdict(list)
     
     # Extract ASCII values from codes
     for code in codes:
         try:
             code = process_code(code)
-            ascii_value = eval(code)  # Assuming each code evaluates to its ASCII value
-            ascii_values[ascii_value] = code
-            # print(f"Code: {code}, ASCII Value: {ascii_value}")  # Debug print
-        except Exception as e:
-            print(f"Error evaluating code '{code}': {e}")  # Debug print
+            ascii_value = eval(code)
+            ascii_values[code] = ascii_value
+            value_to_codes[ascii_value].append(code)
+        except Exception:
             continue
-    for number in range(0, n + 1):
-        result, length = find_shortest_combination(number, codes)
-        if result:
-            if number in ascii_values.keys() and len(result) < len(ascii_values[number]):
-                print(f"{number},{result}")
-            if number not in ascii_values.keys():
-                print(f"{number},{result}")
+
+    # Precompute all possible sums up to n
+    sums = defaultdict(list)
+    for length in range(1, 5):  # Adjust the range based on your max_length
+        for combo in iter_combinations(ascii_values.items(), length):
+            total = sum(val for _, val in combo)
+            if total <= n:
+                sums[total].append("+".join(code for code, _ in combo))
+
+    # Print results
+    for number in range(n + 1):
+        existing_code = min(value_to_codes[number], key=len) if number in value_to_codes else None
+        combinations = sums[number]
+        
+        if combinations:
+            shortest = min(combinations, key=len)
+            if not existing_code or len(f"chr({shortest})") < len(f"chr({existing_code})"):
+                print(f"{number},chr({shortest})")
             else:
-                print(f"(Existing) {number}: {result} (Length: {length})")
+                print(f"(Existing) {number}: chr({existing_code}) (Length: {len(existing_code)})")
+        elif existing_code:
+            print(f"(Existing) {number}: chr({existing_code}) (Length: {len(existing_code)})")
         else:
             print(f"{number}: No combination found")
 
