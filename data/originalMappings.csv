@@ -250,7 +250,7 @@
 249,chr(sum(range(len(str(dict))))+len(str(credits)))
 250,chr(ord(max(repr(repr(repr(str())))))+len(str(credits)))
 251,chr(ord(min(str(()in())))+len(str(bin)+str(credits)))
-252,chr(len(vars(set))+len(vars(set))+len(str(credits)))
+252,chr(ord(min(str(()in())))+len(str(credits)+str(hash)))
 253,chr(sum(range(len(str(bin)))))
 254,chr((not())+sum(range(len(str(bin)))))
 255,chr((not())+(not())+sum(range(len(str(bin)))))

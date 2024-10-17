@@ -62,7 +62,6 @@ jobs:
 
           if [ "$NEW_CANDIDATES_FOUND" = true ]; then
             echo "new_candidates=true" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
           else
             echo "new_candidates=false" >> $GITHUB_OUTPUT
           fi
