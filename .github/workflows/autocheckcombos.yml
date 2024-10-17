@@ -27,16 +27,13 @@ jobs:
         id: find_num
         run: |
           python find-num.py --range 5 | tee result.txt
-          echo "result=$(cat result.txt)" >> $GITHUB_OUTPUT
 
       - name: Check for new candidates and existing combinations
         id: check_candidates
         run: |
           NEW_CANDIDATES_FOUND=false
           while IFS= read -r line; do
-            if [[ "$line" == *"(Existing)"* ]]; then
-              echo "$line" >> existing_combinations.txt
-            elif [[ "$line" =~ ^[0-9] ]]; then
+            if [[ "$line" =~ ^[0-9] ]]; then
               NEW_CANDIDATES_FOUND=true
             fi
           done < result.txt
@@ -61,5 +58,5 @@ jobs:
         if: steps.check_candidates.outputs.new_candidates == 'false'
         uses: actions/upload-artifact@v3
         with:
-          name: existing-combinations-log
-          path: existing_combinations.txt
+          name: results-log
+          path: result.txt
