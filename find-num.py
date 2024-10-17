@@ -98,7 +98,7 @@ def find_combinations_in_range(n, codes):
         
         if combinations:
             shortest = min(combinations, key=len)
-            if not existing_code or len(f"chr({shortest})") < len(f"chr({existing_code})"):
+            if not existing_code or len(f"chr({shortest})") < len(f"{existing_code}"):
                 print(f"{number},chr({shortest})")
             else:
                 print(f"(Existing) {number}: chr({existing_code}) (Length: {len(existing_code)})")
