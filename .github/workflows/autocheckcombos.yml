@@ -26,7 +26,8 @@ jobs:
       - name: Run find-num.py
         id: find_num
         run: |
-          python find-num.py --range 255 | tee result.txt
+          sudo apt-get install -y expect
+          unbuffer python find-num.py --range 5 | tee result.txt
 
       - name: Check for new candidates and existing combinations
         id: check_candidates
