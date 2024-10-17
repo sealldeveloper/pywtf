@@ -85,7 +85,7 @@ def find_combinations_in_range(n, codes):
 
     # Precompute all possible sums up to n
     sums = defaultdict(list)
-    for length in range(1, 5):  # Adjust the range based on your max_length
+    for length in range(1, 4):  # Adjust the range based on your max_length
         for combo in iter_combinations(ascii_values.items(), length):
             total = sum(val for _, val in combo)
             if total <= n:
@@ -98,12 +98,12 @@ def find_combinations_in_range(n, codes):
         
         if combinations:
             shortest = min(combinations, key=len)
-            if not existing_code or len(f"chr({shortest})") < len(f"{existing_code}"):
+            if not existing_code or len(f"chr({shortest})") < len(f'chr({existing_code})'):
                 print(f"{number},chr({shortest})")
             else:
-                print(f"(Existing) {number}: chr({existing_code}) (Length: {len(existing_code)})")
+                print(f"(Existing) {number}: chr({existing_code}) (Length: {len(f'chr({existing_code})')})")
         elif existing_code:
-            print(f"(Existing) {number}: chr({existing_code}) (Length: {len(existing_code)})")
+            print(f"(Existing) {number}: chr({existing_code}) (Length: {len(f'chr({existing_code})')})")
         else:
             print(f"{number}: No combination found")
 
