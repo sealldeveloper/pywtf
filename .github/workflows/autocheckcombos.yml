@@ -45,6 +45,7 @@ jobs:
         run: |
           NEW_CANDIDATES_FOUND=false
           CHANGES=""
+          NEWLINE=$(printf "\\$(printf '%03o' "10")")
           while IFS= read -r line; do
             if [[ "$line" =~ ^[0-9] ]]; then
               NEW_CANDIDATES_FOUND=true
@@ -56,8 +57,7 @@ jobs:
               DIFFERENCE=$((OLD_LENGTH - NEW_LENGTH))
               ASCII_CHAR=$(printf "\\$(printf '%03o' "$ASCII_NUM")")
               sed -i "s/^$ASCII_NUM,.*/$ASCII_NUM,$NEW_PYTHON_CODE/" data/originalMappings.csv
-              CHANGES="${CHANGES}- $ASCII_NUM: `$OLD_PYTHON_CODE` → `$NEW_PYTHON_CODE` (**${DIFFERENCE}** characters shorter!)
-"
+              CHANGES="${CHANGES}- $ASCII_NUM: `$OLD_PYTHON_CODE` → `$NEW_PYTHON_CODE` (**${DIFFERENCE}** characters shorter!)${NEWLINE}"
             fi
           done < result.txt
 
