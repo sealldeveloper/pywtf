@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'data/**'  # This will trigger for any file change in the data directory
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'data/**'  # This will trigger for any file change in the data directory
   schedule:
     - cron: '0 0 1 * *' #once a month
 
