@@ -52,7 +52,11 @@ jobs:
             echo "new_candidates=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Pull Request for Updated Mappings
+      - name: Remove result.txt if new candidates found
+        if: steps.update_mappings.outputs.new_candidates == 'true'
+        run: rm result.txt
+
+      - name: Create or Update Pull Request
         if: steps.update_mappings.outputs.new_candidates == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
@@ -62,7 +66,7 @@ jobs:
           base: main
           branch: update-original-mappings
           commit-message: "Update originalMappings.csv with shorter candidates"
-          delete-branch: true
+          delete-branch: false
 
       - name: Upload Existing Combinations Log
         if: steps.update_mappings.outputs.new_candidates == 'false'
