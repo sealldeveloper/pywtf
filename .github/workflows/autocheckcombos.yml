@@ -24,7 +24,7 @@ jobs:
           python-version: '3.9'  # Specify your required Python version
       
       - name: Install dependencies
-        id: dependecies
+        id: dependencies
         run: |
           sudo apt-get install -y expect
 
@@ -33,13 +33,16 @@ jobs:
         run: |
           unbuffer python find-num.py --range 255 | tee result.txt
 
-      - name: Check for new candidates and existing combinations
-        id: check_candidates
+      - name: Update originalMappings.csv
+        id: update_mappings
         run: |
           NEW_CANDIDATES_FOUND=false
           while IFS= read -r line; do
             if [[ "$line" =~ ^[0-9] ]]; then
               NEW_CANDIDATES_FOUND=true
+              ASCII_NUM=$(echo $line | cut -d',' -f1)
+              NEW_PYTHON_CODE=$(echo $line | cut -d',' -f2)
+              sed -i "s/^$ASCII_NUM,.*/$ASCII_NUM,$NEW_PYTHON_CODE/" data/originalMappings.csv
             fi
           done < result.txt
 
@@ -49,18 +52,20 @@ jobs:
             echo "new_candidates=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Pull Request for New Candidates
-        if: steps.check_candidates.outputs.new_candidates == 'true'
+      - name: Create Pull Request for Updated Mappings
+        if: steps.update_mappings.outputs.new_candidates == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Add new shorter candidates"
-          body: "This PR adds new shorter candidates found by find-num.py."
+          title: "Update originalMappings.csv with shorter candidates"
+          body: "This PR updates data/originalMappings.csv with new shorter candidates found by find-num.py."
           base: main
-          branch: add-shorter-candidates-branch
+          branch: update-original-mappings
+          commit-message: "Update originalMappings.csv with shorter candidates"
+          delete-branch: true
 
       - name: Upload Existing Combinations Log
-        if: steps.check_candidates.outputs.new_candidates == 'false'
+        if: steps.update_mappings.outputs.new_candidates == 'false'
         uses: actions/upload-artifact@v3
         with:
           name: results-log
