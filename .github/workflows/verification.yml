@@ -6,11 +6,17 @@ on:
     branches: ["main"]
   push:
     branches: ["main"]
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Find Shorter Candidates"]
+    types:
+      - completed
 
 jobs:
   verify-python-code:
     runs-on: ${{ matrix.os }}
+    if: >
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'update-original-mappings')
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -19,12 +25,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Checkout PR if exists
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.pull_requests[0]
+        run: |
+          gh pr checkout ${{ github.event.workflow_run.pull_requests[0].number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -37,7 +50,7 @@ jobs:
         run: python verification.py
 
       - name: Check if verification passed
-        shell: bash # Use Bash for this step
+        shell: bash
         run: |
           if [ $? -eq 0 ]; then
             echo "Verification passed for Python ${{ matrix.python-version }} on ${{ matrix.os }}."
