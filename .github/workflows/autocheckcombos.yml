@@ -51,8 +51,12 @@ jobs:
               ASCII_NUM=$(echo $line | cut -d',' -f1)
               NEW_PYTHON_CODE=$(echo $line | cut -d',' -f2)
               OLD_PYTHON_CODE=$(grep "^$ASCII_NUM," data/originalMappings.csv | cut -d',' -f2)
+              OLD_LENGTH=${#OLD_PYTHON_CODE}
+              NEW_LENGTH=${#NEW_PYTHON_CODE}
+              DIFFERENCE=$((OLD_LENGTH - NEW_LENGTH))
+              ASCII_CHAR=$(printf "\\$(printf '%03o' "$ASCII_NUM")")
               sed -i "s/^$ASCII_NUM,.*/$ASCII_NUM,$NEW_PYTHON_CODE/" data/originalMappings.csv
-              CHANGES+="- ASCII $ASCII_NUM: '$OLD_PYTHON_CODE' → '$NEW_PYTHON_CODE'\n"
+              CHANGES+="- ASCII $ASCII_NUM ($ASCII_CHAR): '$OLD_PYTHON_CODE' → '$NEW_PYTHON_CODE' (${DIFFERENCE} characters shorter)\n"
             fi
           done < result.txt
 
@@ -85,9 +89,11 @@ jobs:
 
             The following entries in the mappings have been updated:
 
-            ```
+            <details>
+            <summary>Click to expand changes</summary>
+
             ${{ steps.update_mappings.outputs.changes }}
-            ```
+            </details>
 
             Enjoy 🎉
           base: main
