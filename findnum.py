@@ -64,7 +64,7 @@ def find_shortest_combination(target, codes, max_length=4):
         for combo in iter_combinations(sorted_codes, length):
             combo_sum = sum(val for _, val in combo)
             if combo_sum == target:
-                expression = "+".join(code for code, _ in combo)
+                expression = "+".join(process_code(code) for code, _ in combo)
                 update_shortest(f'chr({expression})')
             elif combo_sum > target:
                 break  # Stop checking this length if sum exceeds target
@@ -163,6 +163,11 @@ def main():
         result, length = find_shortest_combination(args.number, all_codes)
         if result:
             print(f"{args.number}: {result} (Length: {length})")
+            try:
+                evaluated_result = eval(result)
+                print(f"Evaluation: {repr(evaluated_result)}")
+            except Exception as e:
+                print(f"Error during evaluation: {str(e)}")
         else:
             print(f"{args.number}: No combination found")
 
