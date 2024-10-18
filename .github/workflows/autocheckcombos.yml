@@ -6,11 +6,13 @@ on:
       - main
     paths:
       - 'data/originalMappings.csv'
+      - 'findnum.py'
   pull_request:
     branches:
       - main
     paths:
       - 'data/originalMappings.csv'
+      - 'findnum.py'
   schedule:
     - cron: '0 0 1 * *' #once a month
 

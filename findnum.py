@@ -17,42 +17,58 @@ def process_code(code):
         return f"ord({code})"
 
 def find_shortest_combination(target, codes, max_length=4):
-    """Find the shortest combination of codes that evaluates to the target ASCII number."""
+    """Find the shortest combination of codes that evaluates to the target number."""
     ascii_values = {}
     
-    # Extract ASCII values from codes
+    print(f"\nSearching for combinations for target: {target}")
+    
+    # Extract values from codes
     for code in codes:
         try:
-            processed_code = process_code(code)
-            ascii_value = eval(processed_code)
-            ascii_values[code] = ascii_value
-        except Exception:
+            processed_code = code
+            value = eval(processed_code)
+            ascii_values[code] = value
+        except Exception as e:
+            print(f"Failed to evaluate code: {processed_code}. Error: {str(e)}")
             continue
 
     shortest_result = None
     shortest_length = float('inf')
 
     # Helper function to update shortest result
-    def update_shortest(expression, original_code):
+    def update_shortest(expression):
         nonlocal shortest_result, shortest_length
-        current_length = len(original_code)
-        if current_length < shortest_length:
-            shortest_result = original_code
+        current_length = len(expression)
+        
+        if current_length < shortest_length or (current_length == shortest_length and expression < shortest_result):
+            shortest_result = expression
             shortest_length = current_length
+            print(f"Updated shortest: {shortest_result} (Length: {shortest_length})")
 
     # Check individual codes first
+    print("\nChecking individual codes:")
     for code, value in ascii_values.items():
-        if value == target:
-            update_shortest(code, code)
-            return shortest_result, shortest_length
+        if value == chr(target):
+            update_shortest(code)
+            print(f"Exact match found: {code}")
 
     # Check combinations of codes
+    print("\nChecking combinations:")
     for length in range(2, max_length + 1):
-        for combo in combinations(ascii_values.items(), length):
-            if sum(val for _, val in combo) == target:
-                expression = "+".join(code for code, _ in combo)
-                combined_code = f"chr({expression})"
-                update_shortest(expression, combined_code)
+        for combo in iter_combinations(ascii_values.items(), length):
+            try:
+                combo_sum = sum(ord(val) for _, val in combo)
+                if combo_sum == target:
+                    expression = "+".join(process_code(code) for code, _ in combo)
+                    update_shortest(f'chr({expression})')
+            except TypeError as e:
+                print(f"TypeError in combination: chr({'+'.join(process_code(code) for code, _ in combo)}). Error: {str(e)}")
+                continue
+
+    if shortest_result is None:
+        print(f"\nNo combination found for target {target}")
+    else:
+        print(f"\nShortest combination found: {shortest_result}")
 
     return shortest_result, shortest_length
 
@@ -72,9 +88,6 @@ def process_file(filename):
 
 
 def find_combinations_in_range(n, codes):
-    from itertools import combinations as iter_combinations
-    from collections import defaultdict
-
     """Find combinations for all numbers from 0 to n."""
     ascii_values = {}
     value_to_codes = defaultdict(list)
@@ -82,16 +95,16 @@ def find_combinations_in_range(n, codes):
     # Extract ASCII values from codes
     for code in codes:
         try:
-            code = process_code(code)
-            ascii_value = eval(code)
-            ascii_values[code] = ascii_value
+            processed_code = process_code(code)
+            ascii_value = eval(processed_code)
+            ascii_values[processed_code] = ascii_value
             value_to_codes[ascii_value].append(code)
         except Exception:
             continue
 
     # Precompute all possible sums up to n
     sums = defaultdict(list)
-    for length in range(1, 4):  # Adjust the range based on your max_length
+    for length in range(2, 4):  # Adjust the range based on your max_length
         for combo in iter_combinations(ascii_values.items(), length):
             total = sum(val for _, val in combo)
             if total <= n:
@@ -104,12 +117,12 @@ def find_combinations_in_range(n, codes):
         
         if combinations:
             shortest = min(combinations, key=len)
-            if not existing_code or len(f"chr({shortest})") < len(f'chr({existing_code})'):
+            if not existing_code or len(f"chr({shortest})") < len(existing_code):
                 print(f"{number},chr({shortest})")
             else:
-                print(f"(Existing) {number}: chr({existing_code}) (Length: {len(f'chr({existing_code})')})")
+                print(f"(Existing) {number}: {existing_code} (Length: {len(existing_code)})")
         elif existing_code:
-            print(f"(Existing) {number}: chr({existing_code}) (Length: {len(f'chr({existing_code})')})")
+            print(f"(Existing) {number}: {existing_code} (Length: {len(existing_code)})")
         else:
             print(f"{number}: No combination found")
 
