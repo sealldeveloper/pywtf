@@ -112,29 +112,54 @@ def find_combinations_in_range(n, codes):
         except Exception:
             continue
 
-    # Precompute all possible sums up to n
+    # Precompute all possible sums up to n + 1
     sums = defaultdict(list)
     for length in range(2, 4):  # Adjust the range based on your max_length
         for combo in iter_combinations(ascii_values.items(), length):
             total = sum(val for _, val in combo)
-            if total <= n:
-                sums[total].append("+".join(code for code, _ in combo))
+            if total <= n + 1:
+                expression = "+".join(process_code(code) for code, _ in combo)
+                sums[total].append(expression)
+
+    # Find the shortest combination for each number
+    results = {}
+    for number in range(n + 1):
+        existing_code = min(value_to_codes[number], key=len) if number in value_to_codes else None
+        shortest = None
+        shortest_length = float('inf')
+
+        # Check existing code
+        if existing_code:
+            shortest = process_code(existing_code)
+            shortest_length = len(existing_code)
+
+        # Check direct combinations
+        if number in sums:
+            direct = min(sums[number], key=len)
+            if len(f"chr({direct})") < shortest_length:
+                shortest = direct
+                shortest_length = len(f"chr({direct})")
+
+        # Check combinations for number + 1
+        if number + 1 in sums:
+            wrapped = min(sums[number + 1], key=len)
+            wrapped_expression = wrap_max_range(wrapped)
+            if len(f"chr({wrapped_expression})") < shortest_length:
+                shortest = wrapped_expression
+                shortest_length = len(f"chr({wrapped_expression})")
+
+        if shortest:
+            results[number] = shortest
 
     # Print results
     for number in range(n + 1):
-        existing_code = min(value_to_codes[number], key=len) if number in value_to_codes else None
-        combinations = sums[number]
-        
-        if combinations:
-            shortest = min(combinations, key=len)
-            if not existing_code or len(f"chr({shortest})") < len(existing_code):
-                print(f"{number},chr({shortest})")
-            else:
-                print(f"(Existing) {number}: {existing_code} (Length: {len(existing_code)})")
-        elif existing_code:
-            print(f"(Existing) {number}: {existing_code} (Length: {len(existing_code)})")
+        if number in results:
+            print(f"{number},chr({results[number]})")
         else:
             print(f"{number}: No combination found")
+
+
+
 
 def main():
     parser = argparse.ArgumentParser(description="Process CSV files and find combinations.")
