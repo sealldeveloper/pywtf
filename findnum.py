@@ -16,6 +16,10 @@ def process_code(code):
     else:
         return f"ord({code})"
 
+def wrap_max_range(number):
+    """Wrap the number with max(range(<number>))"""
+    return f"max(range({number}))"
+
 def find_shortest_combination(target, codes, max_length=4):
     """Find the shortest combination of codes that evaluates to the target number."""
     ascii_values = {}
@@ -66,8 +70,13 @@ def find_shortest_combination(target, codes, max_length=4):
             if combo_sum == target:
                 expression = "+".join(process_code(code) for code, _ in combo)
                 update_shortest(f'chr({expression})')
-            elif combo_sum > target:
-                break  # Stop checking this length if sum exceeds target
+            elif combo_sum == target + 1:
+                # If the combination sum is 1 more than the target, wrap it with max(range())
+                expression = "+".join(process_code(code) for code, _ in combo)
+                wrapped_expression = wrap_max_range(expression)
+                update_shortest(f'chr({wrapped_expression})')
+            elif combo_sum > target + 1:
+                break  # Stop checking this length if sum exceeds target + 1
 
     if shortest_result is None:
         print(f"\nNo combination found for target {target}")
@@ -86,8 +95,6 @@ def process_file(filename):
             if len(row) >= 2:
                 codes.append(row[1])  # Assuming the second column contains the code snippets
     return codes
-
-# Main execution logic remains the same...
 
 
 def find_combinations_in_range(n, codes):
