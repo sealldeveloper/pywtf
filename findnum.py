@@ -154,7 +154,8 @@ def find_combinations_in_range(n, codes):
     # Print results
     for number in range(n + 1):
         if number in results:
-            print(f"{number},chr({results[number]})")
+            if len(f'chr({results[number]})') < value_to_codes[number]:
+                print(f"{number},chr({results[number]})")
         else:
             print(f"{number}: No combination found")
 
