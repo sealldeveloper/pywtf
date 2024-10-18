@@ -23,10 +23,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
       
@@ -35,10 +35,10 @@ jobs:
         run: |
           sudo apt-get install -y expect
 
-      - name: Run find-num.py
+      - name: Run findnum.py
         id: find_num
         run: |
-          unbuffer python find-num.py --range 255 | tee result.txt
+          unbuffer python findnum.py --range 255 | tee result.txt
 
       - name: Update originalMappings.csv
         id: update_mappings
@@ -81,7 +81,7 @@ jobs:
           body: |
             ## 🚀 Automatic Shorter Candidates
 
-            This PR updates `data/originalMappings.csv` with new shorter candidates discovered by `find-num.py`.
+            This PR updates `data/originalMappings.csv` with new shorter candidates discovered by `findnum.py`.
 
             Enjoy 🎉
           base: main
@@ -95,7 +95,7 @@ jobs:
 
       - name: Upload Existing Combinations Log
         if: steps.update_mappings.outputs.new_candidates == 'false'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: results-log
           path: result.txt

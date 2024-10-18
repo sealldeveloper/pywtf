@@ -23,8 +23,8 @@ def find_shortest_combination(target, codes, max_length=4):
     # Extract ASCII values from codes
     for code in codes:
         try:
-            code = process_code(code)
-            ascii_value = eval(code)
+            processed_code = process_code(code)
+            ascii_value = eval(processed_code)
             ascii_values[code] = ascii_value
         except Exception:
             continue
@@ -33,23 +33,29 @@ def find_shortest_combination(target, codes, max_length=4):
     shortest_length = float('inf')
 
     # Helper function to update shortest result
-    def update_shortest(expression):
+    def update_shortest(expression, original_code):
         nonlocal shortest_result, shortest_length
-        current_length = len(f"chr({expression})")
+        current_length = len(original_code)
         if current_length < shortest_length:
-            shortest_result = f"chr({expression})"
+            shortest_result = original_code
             shortest_length = current_length
 
+    # Check individual codes first
+    for code, value in ascii_values.items():
+        if value == target:
+            update_shortest(code, code)
+            return shortest_result, shortest_length
+
     # Check combinations of codes
-    for length in range(1, max_length + 1):
+    for length in range(2, max_length + 1):
         for combo in combinations(ascii_values.items(), length):
             if sum(val for _, val in combo) == target:
                 expression = "+".join(code for code, _ in combo)
-                update_shortest(expression)
-                if length == 1:  # If we found a single code match, we can stop
-                    return shortest_result, shortest_length
+                combined_code = f"chr({expression})"
+                update_shortest(expression, combined_code)
 
     return shortest_result, shortest_length
+
 
 
 def process_file(filename):
