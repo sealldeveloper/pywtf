@@ -25,11 +25,13 @@ def find_shortest_combination(target, codes, max_length=4):
     # Extract values from codes
     for code in codes:
         try:
-            processed_code = code
-            value = eval(processed_code)
-            ascii_values[code] = value
+            value = eval(code)
+            if isinstance(value, str) and len(value) == 1:
+                ascii_values[code] = ord(value)
+            elif isinstance(value, int):
+                ascii_values[code] = value
         except Exception as e:
-            print(f"Failed to evaluate code: {processed_code}. Error: {str(e)}")
+            print(f"Failed to evaluate code: {code}. Error: {str(e)}")
             continue
 
     shortest_result = None
@@ -48,22 +50,24 @@ def find_shortest_combination(target, codes, max_length=4):
     # Check individual codes first
     print("\nChecking individual codes:")
     for code, value in ascii_values.items():
-        if value == chr(target):
+        if value == target:
             update_shortest(code)
             print(f"Exact match found: {code}")
+            return code, len(code)  # Early return if exact match found
+
+    # Sort codes by their ASCII values
+    sorted_codes = sorted(ascii_values.items(), key=lambda x: x[1])
 
     # Check combinations of codes
     print("\nChecking combinations:")
     for length in range(2, max_length + 1):
-        for combo in iter_combinations(ascii_values.items(), length):
-            try:
-                combo_sum = sum(ord(val) for _, val in combo)
-                if combo_sum == target:
-                    expression = "+".join(process_code(code) for code, _ in combo)
-                    update_shortest(f'chr({expression})')
-            except TypeError as e:
-                print(f"TypeError in combination: chr({'+'.join(process_code(code) for code, _ in combo)}). Error: {str(e)}")
-                continue
+        for combo in iter_combinations(sorted_codes, length):
+            combo_sum = sum(val for _, val in combo)
+            if combo_sum == target:
+                expression = "+".join(code for code, _ in combo)
+                update_shortest(f'chr({expression})')
+            elif combo_sum > target:
+                break  # Stop checking this length if sum exceeds target
 
     if shortest_result is None:
         print(f"\nNo combination found for target {target}")
@@ -71,7 +75,6 @@ def find_shortest_combination(target, codes, max_length=4):
         print(f"\nShortest combination found: {shortest_result}")
 
     return shortest_result, shortest_length
-
 
 
 def process_file(filename):
