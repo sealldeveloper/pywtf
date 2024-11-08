@@ -29,7 +29,7 @@
 28,chr(len(str(set()))+len(str(bin)))
 29,chr(len(str(set()))+len(str(hash)))
 30,chr(len(str(set()))+len(str(ascii)))
-31,chr(len(str(set))+len(str(reversed)))
+31,chr(len(str(type(quit))))
 32,min(str(bin))
 33,chr((not())+ord(min(str(bin))))
 34,min(repr(repr(str())))
