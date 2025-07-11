@@ -250,7 +250,7 @@
 249,chr(len(str(reversed))+sum(range(len(vars(tuple)))))
 250,chr(len(str(frozenset))+sum(range(len(vars(tuple)))))
 251,chr(len(str(set))+ord(max(str(set)))+ord(max(str(zip))))
-252,chr(max(range(ord(int())+sum(range(len(str(bin)))))))
+252,chr(max(range(int()+sum(range(len(str(bin)))))))
 253,chr(sum(range(len(str(bin)))))
 254,chr((not())+sum(range(len(str(bin)))))
 255,chr((not())+(not())+sum(range(len(str(bin)))))
