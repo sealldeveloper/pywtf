@@ -1,1 +1,3 @@
-28,chr(len(str(type(iter(str())))))
+57,chr(len(dir(set)))
+58,chr((not())+len(dir(set)))
+59,chr((not())+(not())+len(dir(set)))
