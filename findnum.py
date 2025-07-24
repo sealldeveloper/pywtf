@@ -1,6 +1,9 @@
 import argparse
 import csv
 import sys
+import subprocess
+import tempfile
+import os
 from collections import defaultdict
 from itertools import combinations as iter_combinations
 
@@ -12,6 +15,69 @@ def test_expression(expr):
         return result
     except:
         return None
+
+
+def test_expression_across_python_versions(expr, target_char):
+    """Test if an expression works across all Python versions used in CI."""
+    python_versions = ['python3.9', 'python3.10', 'python3.11', 'python3.12', 'python3']
+    
+    # Create a temporary test script
+    test_script = f"""
+import sys
+try:
+    result = {expr}
+    expected = {repr(target_char)}
+    if result == expected:
+        print("SUCCESS")
+        sys.exit(0)
+    else:
+        print(f"MISMATCH: got {{result!r}}, expected {{expected!r}}")
+        sys.exit(1)
+except Exception as e:
+    print(f"ERROR: {{e}}")
+    sys.exit(1)
+"""
+    
+    # Test on each available Python version
+    working_versions = []
+    for python_cmd in python_versions:
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+                f.write(test_script)
+                temp_file = f.name
+            
+            # Test if this Python version is available
+            try:
+                subprocess.run([python_cmd, '--version'], 
+                             capture_output=True, check=True, timeout=5)
+            except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
+                # This Python version is not available, skip it
+                os.unlink(temp_file)
+                continue
+            
+            # Run the test
+            result = subprocess.run([python_cmd, temp_file], 
+                                  capture_output=True, text=True, timeout=10)
+            
+            os.unlink(temp_file)
+            
+            if result.returncode == 0 and "SUCCESS" in result.stdout:
+                working_versions.append(python_cmd)
+            else:
+                # Failed on this version, expression is not compatible
+                return False
+                
+        except (subprocess.TimeoutExpired, Exception):
+            # Clean up temp file if it exists
+            try:
+                os.unlink(temp_file)
+            except:
+                pass
+            # If we can't test on this version, consider it a failure
+            return False
+    
+    # Expression must work on at least one Python version to be valid
+    return len(working_versions) > 0
 
 def find_shortest_combination(target, codes):
     """Find the shortest combination that produces chr(target)."""
@@ -44,10 +110,12 @@ def find_shortest_combination(target, codes):
                 
                 # Quick length check before expensive eval
                 if len(full_expr) < shortest_len:
-                    # Test if it actually works
+                    # Test if it actually works on current Python version
                     if test_expression(full_expr) == chr(target):
-                        shortest = full_expr
-                        shortest_len = len(full_expr)
+                        # Test if it works across all Python versions
+                        if test_expression_across_python_versions(full_expr, chr(target)):
+                            shortest = full_expr
+                            shortest_len = len(full_expr)
     
     return shortest, shortest_len if shortest else (None, 0)
 
@@ -80,7 +148,9 @@ def find_combinations_in_range(n, codes):
             if shorter and shorter_len < len(original):
                 # Verify it actually works and produces the right character
                 if test_expression(shorter) == chr(number):
-                    print(f"{number},{shorter}")
+                    # Verify it works across all Python versions
+                    if test_expression_across_python_versions(shorter, chr(number)):
+                        print(f"{number},{shorter}")
                 # If no shorter working combination found, don't print anything
 
 
@@ -119,7 +189,11 @@ def main():
     if args.number is not None:
         result, length = find_shortest_combination(args.number, all_codes)
         if result and test_expression(result) == chr(args.number):
-            print(f"{args.number},{result}")
+            # Test across all Python versions
+            if test_expression_across_python_versions(result, chr(args.number)):
+                print(f"{args.number},{result}")
+            else:
+                print(f"{args.number}: Found shorter combination but it fails on some Python versions")
         else:
             print(f"{args.number}: No shorter combination found")
 
@@ -135,7 +209,11 @@ def main():
         for number in numbers:
             result, length = find_shortest_combination(number, all_codes)
             if result and test_expression(result) == chr(number):
-                print(f"{number},{result}")
+                # Test across all Python versions
+                if test_expression_across_python_versions(result, chr(number)):
+                    print(f"{number},{result}")
+                else:
+                    print(f"{number}: Found shorter combination but it fails on some Python versions")
             else:
                 print(f"{number}: No shorter combination found")
 
