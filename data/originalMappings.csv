@@ -517,3 +517,4 @@
 489555,chr(sum(range(sum(range(len(vars(tuple))+len(str(bin)))))))
 490545,chr(sum(range(int()+(not())+sum(range(len(vars(tuple))+len(str(bin)))))))
 492528,chr(sum(range(int()+(not())+(not())+(not())+sum(range(len(vars(tuple))+len(str(bin)))))))
+
