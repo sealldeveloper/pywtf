@@ -36,8 +36,8 @@ See the full list at a later date...
 
 # How it Works
 
-Todo
+Madness, mostly madness.
 
 # Further Readings
 
-Todo
+https://seall.dev/blog/pywtf/
